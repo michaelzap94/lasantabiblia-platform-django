@@ -1,0 +1,11 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block branding %}
+  <h1 id="head">
+    <img src="{% static 'img/bible.png' %}" alt="La Santa Biblia" height="30" width="50" class="brand_img"> LSB Admin Area
+  </h1>
+{% endblock %}
+{% block extrastyle %}
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
