@@ -3,6 +3,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin
 
+#Receive the signal that a user has been created and create a token as well
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
 # Manager class -> can create a user or super user
 # all of this class is BoilerPlate
 class MyAccountUserManager(BaseUserManager):
@@ -62,11 +68,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-        # NOT NEEDED SINCE I'M PASSING PermissionsMixin
-        # # For checking permissions. to keep it simple all admin have ALL permissons
-    # def has_perm(self, perm, obj=None):
-        #     return self.is_admin #only admin users can edit the User table
-
-        # # Does this user have permission to view this app? (ALWAYS YES FOR SIMPLICITY)
-    # def has_module_perms(self, app_label):
-        #     return True
+#THIS WILL GET CALLED AFTER WE CREATE A NEW USER.
+#Receive the signal that a user has been created using the custom AUTH_USER_MODEL and create a token as well
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
