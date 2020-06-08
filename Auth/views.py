@@ -8,6 +8,9 @@ from rest_framework import viewsets, permissions #sets of pages that the rest_fr
 from rest_framework.authtoken.models import Token
 # Used for create-only endpoints. Provides a post method handler.
 from rest_framework.generics import CreateAPIView
+# Creating tokens manually using function
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 from django.contrib.auth import get_user_model  # If used custom user model
 
@@ -51,6 +54,52 @@ def registration_view(request):
 		else:
 			data = serializer.errors
 		return Response(data)
+
+# Register
+# Response: {
+#     "response": "successfully registered new user.",
+#     "email": "test1223@tabian.ca",
+#     "username": "test1232",
+#     "pk": 1,
+#     "jwt": {
+#     		"refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eX...",
+#     		"access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tll90eXBl..."
+# 		}
+# }
+# Url: https://<your-domain>/api/account/register
+@api_view(['POST', ])
+@permission_classes([])
+@authentication_classes([])
+def registration_view_jwt(request):
+	if request.method == 'POST':
+		data = {}
+		email = request.data.get('email', '0').lower()
+		if validate_email(email) != None:
+			data['error_message'] = 'That email is already in use.'
+			data['response'] = 'Error'
+			return Response(data)
+
+		serializer = RegistrationSerializer(data=request.data)
+
+		if serializer.is_valid():
+			account = serializer.save()
+			data['response'] = 'successfully registered new user.'
+			data['email'] = account.email
+			data['firstname'] = account.firstname
+			data['lastname'] = account.lastname
+
+			data['jwt'] = get_tokens_for_user(account)
+		else:
+			data = serializer.errors
+		return Response(data)
+
+def get_tokens_for_user(account):
+    refresh = RefreshToken.for_user(account)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 def validate_email(email):
 	account = None

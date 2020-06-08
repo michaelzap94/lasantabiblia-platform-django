@@ -12,7 +12,7 @@ urlpatterns = [
     #you can use a custom view if you need to return more data apart from token(this requires 'username')
     path('api/token/login/', authviews.obtain_auth_token, name='login_token'),
     #JWT
-    path('api/jwt/signup/', views.registration_view, name='signup_jwt'),
+    path('api/jwt/signup/', views.registration_view_jwt, name='signup_jwt'),
     path('api/jwt/login/', jwt_views.TokenObtainPairView.as_view(), name='login_jwt'),
     path('api/jwt/refresh/', jwt_views.TokenRefreshView.as_view(), name='refresh_jwt'),#TODO: OWN LOGIC FOR SECURITY
     #EXTRA
