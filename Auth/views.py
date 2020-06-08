@@ -2,9 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response  # Rest framework response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.authentication import TokenAuthentication
+# from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import SessionAuthentication
 from rest_framework import viewsets, permissions #sets of pages that the rest_framework will create for us
 from rest_framework.authtoken.models import Token
 # Used for create-only endpoints. Provides a post method handler.
@@ -70,8 +69,8 @@ class RegisterUserOnlyView(CreateAPIView):
     serializer_class = RegistrationSerializer # Specify which serializer_class to use (show) when this view is accessed/served
 # ============================================================================================================================
 class TestAllLabels(APIView):
-    # you need to be authenticated either through session or token to access this
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    # specified in settings
+    # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):

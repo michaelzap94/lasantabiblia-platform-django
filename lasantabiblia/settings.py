@@ -57,7 +57,13 @@ MIDDLEWARE = [
 #REST FRAMEWORK SPECIFIC
 # The default permission is ‘rest_framework.permissions.AllowAny’, which – as the name suggests – allows everyone to do anything. 
 # Let’s protect the API so that only logged-in users have access. by adding the following entry:
+# DEFAULT_AUTHENTICATION_CLASSES -> used if no authentication_classes provided
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
