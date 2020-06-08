@@ -27,9 +27,6 @@ SECRET_KEY = '=*@sf%07zlfb-w-1owu04$2cnnsc4l(cz1az-t31(54^k_j_e^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'Core',
     'RestAPIS'
 ]
@@ -143,3 +141,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'lasantabiblia/static')
 ]
+
+#ADD THIS SO YOU CAN MAKE YOUR PROJECT AVAILABLE TO YOUR HOME NETWORK:
+#THEN, it can be access through your phone
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.177.49']#ADD YOUR IP HERE.
