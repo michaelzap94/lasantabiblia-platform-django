@@ -147,3 +147,6 @@ STATICFILES_DIRS = [
 #ADD THIS SO YOU CAN MAKE YOUR PROJECT AVAILABLE TO YOUR HOME NETWORK:
 #THEN, it can be access through your phone
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.177.49']#ADD YOUR IP HERE.
+
+#reference the App/ModelClassName -> tell Django that we want to use a Custom model for the built-in User table
+AUTH_USER_MODEL = 'Account.Account'
