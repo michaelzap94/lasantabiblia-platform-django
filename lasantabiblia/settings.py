@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',#generates 2 models, outstanding and blacklist for Refresh tokens
     'Core',
     'RestAPIS',
     'Auth',
@@ -73,7 +74,9 @@ REST_FRAMEWORK = {
 #SIMPLE_JWT SPECIFIC
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=8),
-    'REFRESH_TOKEN_LIFETIME': timedelta(weeks=56)
+    'REFRESH_TOKEN_LIFETIME': timedelta(weeks=56),
+    'ROTATE_REFRESH_TOKENS': True, # RETURN new Refresh token and access token when TokenRefreshView
+    'BLACKLIST_AFTER_ROTATION': True, # Refresh tokens submitted to the TokenRefreshView to be added to the blacklist. 
 }
 
 ROOT_URLCONF = 'lasantabiblia.urls'
