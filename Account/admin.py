@@ -8,8 +8,8 @@ from .models import Account
 
 class UserAdmin(BaseUserAdmin):
     ordering = ['id']
-    list_display = ['email', 'firstname', 'lastname', 'date_joined', 'last_login', 'is_admin','is_staff']
-    search_fields = ('email','firstname', 'lastname')
+    list_display = ['email', 'fullname', 'firstname', 'lastname', 'date_joined', 'last_login', 'is_admin','is_staff']
+    search_fields = ('email','fullname', 'firstname', 'lastname')
     readonly_fields=('date_joined', 'last_login')
     filter_horizontal = ()
     list_filter = ()
@@ -18,7 +18,7 @@ class UserAdmin(BaseUserAdmin):
     # Structure: Title for the sections | fields it will contain
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        (_('Personal Info'), {'fields': ('firstname','lastname')}),
+        (_('Personal Info'), {'fields': ('fullname','firstname','lastname')}),
         (_('Permissions'),
             {
                 'fields': (
@@ -37,7 +37,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),  # built-in, default
-            'fields': ('email', 'password1', 'password2','firstname','lastname')
+            'fields': ('email', 'password1', 'password2','fullname', 'firstname', 'lastname')
         }),
     )
 

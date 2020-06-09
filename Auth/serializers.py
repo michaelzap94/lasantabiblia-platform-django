@@ -7,12 +7,17 @@ from Account.models import Account
 
 class RegistrationSerializer(serializers.ModelSerializer):
     #password number 2 is not part of the Account model, so when you add it to fields:
-    #fields = ( "id", "email", "password", "password2", "firstname", "lastname" )
+    #fields = ( "id", "email", "password", "password2", "fullname" )
     #it will trow an error unless we specify this field here
     password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
 
     def create(self, validated_data):
-        account = Account(email=validated_data['email'], firstname=validated_data['firstname'], lastname=validated_data['lastname'])
+        print(validated_data.get('fullname', None))
+        account = Account(
+            email=validated_data['email'], 
+            fullname=validated_data.get('fullname', None), 
+            firstname=validated_data.get('firstname', None), 
+            lastname=validated_data.get('lastname', None))
         password = validated_data['password']
         password2 = validated_data['password2']
         if password != password2:
@@ -33,7 +38,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         
     class Meta:
         model = Account
-        fields = ( "id", "email", "password", "password2", "firstname", "lastname" )
+        fields = ( "id", "email", "password", "password2", "fullname", "firstname", "lastname" )
         extra_kwargs = {
             'password' : {'write_only': True} # we don't want the password to be readable, only writable
         }
@@ -51,6 +56,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(account)
         # Add custom claims
         token['email'] = account.email
+        token['fullname'] = account.fullname
         token['firstname'] = account.firstname
         token['lastname'] = account.lastname
         return token

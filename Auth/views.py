@@ -49,6 +49,7 @@ def registration_view(request):
             account = serializer.save()
             data['response'] = 'successfully registered new user.'
             data['email'] = account.email
+            data['fullname'] = account.fullname
             data['firstname'] = account.firstname
             data['lastname'] = account.lastname
             data['pk'] = account.pk
@@ -90,6 +91,7 @@ def registration_view_jwt(request):
             account = serializer.save()
             data['response'] = 'successfully registered new user.'
             data['email'] = account.email
+            data['fullname'] = account.fullname
             data['firstname'] = account.firstname
             data['lastname'] = account.lastname
 
