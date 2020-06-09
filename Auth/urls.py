@@ -16,6 +16,7 @@ urlpatterns = [
     #path('api/jwt/login/', jwt_views.TokenObtainPairView.as_view(), name='login_jwt'), #built-in login
     path('api/jwt/login/', views.MyTokenObtainPairView.as_view(), name='login_jwt'),
     path('api/jwt/refresh/', jwt_views.TokenRefreshView.as_view(), name='refresh_jwt'),
+    path('api/jwt/logout/', views.logout_view_jwt, name='logout_jwt'),
     #EXTRA
     path('api/no-token/signup/', views.RegisterUserOnlyView.as_view(), name='signup_no_token'),
     path('test/labels/', views.TestAllLabels.as_view(), name='test'),

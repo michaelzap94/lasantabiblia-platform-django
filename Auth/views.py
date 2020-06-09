@@ -10,7 +10,7 @@ from rest_framework.authtoken.models import Token
 # Used for create-only endpoints. Provides a post method handler.
 from rest_framework.generics import CreateAPIView
 # Creating tokens manually using function
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from django.contrib.auth import get_user_model  # If used custom user model
@@ -114,9 +114,32 @@ def get_tokens_for_user(account):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+@api_view(['POST', ])
+@permission_classes([IsAuthenticated])
+def logout_view_jwt(request):
+    if request.method == 'POST':
+        refresh_token = request.data.get('refresh', None)
+        if refresh_token != None:
+            data = {}
+            data['response'] = blacklist_refresh_token(refresh_token)
+            return Response(data)
+
+
+def blacklist_refresh_token(refresh_token):
+    result = {}
+    try:
+        token = RefreshToken(refresh_token)
+        result['result'] = token.blacklist()[1] # (<BlacklistedToken: Blacklisted token for news356@gmail.com>, True)
+        result['message'] = 'success'
+    except TokenError as e:
+        result['message'] = 'error'
+        result['code'] = 'token_not_valid'
+        result['detail'] = str(e)
+    finally:
+        return result
+
 # ============================================================================================================================
-
-
 def validate_email(email):
     account = None
     try:
