@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import (ModelSerializer,)#OR HyperlinkedModelSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 #Since I'm using a custom User, I need to import the custom User class and not the Built-in model
 from Account.models import Account
 
@@ -40,3 +42,24 @@ class RegistrationSerializer(serializers.ModelSerializer):
 #from django.contrib.auth.models import User #SAME AS:
 #from django.contrib.auth import get_user_model # Return User Model that is Active in this project
 # UserModel = get_user_model()
+
+#Serialize JWT login/signup data returned in jwt token
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, account):
+        # The default result (access/refresh tokens)
+        token = super().get_token(account)
+        # Add custom claims
+        token['email'] = account.email
+        token['firstname'] = account.firstname
+        token['lastname'] = account.lastname
+        return token
+    
+    def validate(self, attrs):
+        # The default result (access/refresh tokens)
+        data = super(MyTokenObtainPairSerializer, self).validate(attrs)
+        # Custom data you want to include in the response object
+        data.update({'message': 'success'})
+        data.update({'id': self.user.id})
+        # and everything else you want to send in the response
+        return data
