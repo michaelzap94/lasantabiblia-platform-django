@@ -22,7 +22,7 @@ from Account.models import Account
 
 # Register
 # Response: {
-#     "response": "successfully registered new user.",
+#     "status": "success",
 #     "email": "test1223@tabian.ca",
 #     "username": "test1232",
 #     "pk": 1,
@@ -40,14 +40,14 @@ def registration_view(request):
         email = request.data.get('email', '0').lower()
         if validate_email(email) != None:
             data['error_message'] = 'That email is already in use.'
-            data['response'] = 'Error'
+            data['status'] = 'error'
             return Response(data)
 
         serializer = RegistrationSerializer(data=request.data)
 
         if serializer.is_valid():
             account = serializer.save()
-            data['response'] = 'successfully registered new user.'
+            data['status'] = 'success'
             data['email'] = account.email
             data['fullname'] = account.fullname
             data['firstname'] = account.firstname
@@ -61,15 +61,10 @@ def registration_view(request):
 # ============================================================================================================================
 # Register
 # Response: {
-#     "response": "successfully registered new user.",
-#     "email": "test1223@tabian.ca",
-#     "username": "test1232",
-#     "pk": 1,
-#     "jwt": {
+#           "status": "success"
 #     		"refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eX...",
 #     		"access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tll90eXBl..."
 # 		}
-# }
 # Url: https://<your-domain>/api/account/register
 
 
@@ -82,20 +77,15 @@ def registration_view_jwt(request):
         email = request.data.get('email', '0').lower()
         if validate_email(email) != None:
             data['error_message'] = 'That email is already in use.'
-            data['response'] = 'Error'
+            data['status'] = 'error'
             return Response(data)
 
         serializer = RegistrationSerializer(data=request.data)
 
         if serializer.is_valid():
             account = serializer.save()
-            data['response'] = 'successfully registered new user.'
-            data['email'] = account.email
-            data['fullname'] = account.fullname
-            data['firstname'] = account.firstname
-            data['lastname'] = account.lastname
-
-            data['jwt'] = get_tokens_with_data(account)
+            #the JWT token will contain the data I need about the user
+            data = get_tokens_with_data(account)
         else:
             data = serializer.errors
         return Response(data)
@@ -105,6 +95,7 @@ def get_tokens_with_data(account):
 	return {
 		'refresh': str(refresh),
 		'access': str(refresh.access_token),
+        'status': 'success'
 	}
 
 def get_tokens_for_user(account):
@@ -133,9 +124,9 @@ def blacklist_refresh_token(refresh_token):
     try:
         token = RefreshToken(refresh_token)
         result['result'] = token.blacklist()[1] # (<BlacklistedToken: Blacklisted token for news356@gmail.com>, True)
-        result['message'] = 'success'
+        result['status'] = 'success'
     except TokenError as e:
-        result['message'] = 'error'
+        result['status'] = 'error'
         result['code'] = 'token_not_valid'
         result['detail'] = str(e)
     finally:

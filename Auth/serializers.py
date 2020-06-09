@@ -64,7 +64,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # The default result (access/refresh tokens)
         data = super(MyTokenObtainPairSerializer, self).validate(attrs)
         # Custom data you want to include in the response object
-        data.update({'message': 'success'})
+        data.update({'status': 'success'})
         #data.update({'id': self.user.id}) #id is already included in the JWT token
         # and everything else you want to send in the response
         return data
