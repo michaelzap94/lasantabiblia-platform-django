@@ -12,7 +12,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
 
     def create(self, validated_data):
-        print(validated_data.get('fullname', None))
         account = Account(
             email=validated_data['email'], 
             fullname=validated_data.get('fullname', None), 
