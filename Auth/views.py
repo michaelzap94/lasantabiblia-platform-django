@@ -13,6 +13,8 @@ from rest_framework.generics import CreateAPIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+import json
+
 from django.contrib.auth import get_user_model  # If used custom user model
 
 from RestAPIS.models import Label
@@ -39,7 +41,7 @@ def registration_view(request):
         data = {}
         email = request.data.get('email', '0').lower()
         if validate_email(email) != None:
-            data['error_message'] = 'That email is already in use.'
+            data['error'] = 'That email is already in use.'
             data['status'] = 'error'
             return Response(data)
 
@@ -56,7 +58,8 @@ def registration_view(request):
             token = Token.objects.get(user=account).key
             data['token'] = token
         else:
-            data = serializer.errors
+            data['status'] = 'error'
+            data['error'] = json.dumps(serializer.errors)
         return Response(data)
 # ============================================================================================================================
 # Register
@@ -76,7 +79,7 @@ def registration_view_jwt(request):
         data = {}
         email = request.data.get('email', '0').lower()
         if validate_email(email) != None:
-            data['error_message'] = 'That email is already in use.'
+            data['error'] = 'That email is already in use.'
             data['status'] = 'error'
             return Response(data)
 
@@ -87,7 +90,8 @@ def registration_view_jwt(request):
             #the JWT token will contain the data I need about the user
             data = get_tokens_with_data(account)
         else:
-            data = serializer.errors
+            data['status'] = 'error'
+            data['error'] = json.dumps(serializer.errors)
         return Response(data)
 
 def get_tokens_with_data(account):

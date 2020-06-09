@@ -73,8 +73,8 @@ REST_FRAMEWORK = {
 
 #SIMPLE_JWT SPECIFIC
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=8),
-    'REFRESH_TOKEN_LIFETIME': timedelta(weeks=56),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=4),
+    'REFRESH_TOKEN_LIFETIME': timedelta(weeks=5),
     'ROTATE_REFRESH_TOKENS': True, # RETURN new Refresh token and access token when TokenRefreshView
     'BLACKLIST_AFTER_ROTATION': True, # Refresh tokens submitted to the TokenRefreshView to be added to the blacklist. 
 }
