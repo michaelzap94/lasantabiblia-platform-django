@@ -45,11 +45,12 @@ class Account(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         max_length=255, unique=True, verbose_name="email")
     # username = models.CharField(max_length=255, unique=True)
+    account_type = models.CharField(max_length=255, default="local", null=False)
+    social_id = models.CharField(max_length=255, default=None, null=True)
     fullname = models.CharField(max_length=255, default=None, null=True)
     firstname = models.CharField(max_length=255, default=None, null=True)
     lastname = models.CharField(max_length=255, default=None, null=True)
-    date_joined = models.DateTimeField(
-        verbose_name='date joined', auto_now_add=True)
+    date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -68,6 +69,10 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    def set_social_id(self, social_id):
+        self.social_id = social_id
+
 
 #THIS WILL GET CALLED AFTER WE CREATE A NEW USER.
 #Receive the signal that a user has been created using the custom AUTH_USER_MODEL and create a token as well

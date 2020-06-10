@@ -42,6 +42,35 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'password' : {'write_only': True} # we don't want the password to be readable, only writable
         }
 
+
+class TokenRegistrationSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        account = Account(
+            email=validated_data['email'], 
+            account_type=validated_data['account_type'],
+            fullname=validated_data.get('fullname', None), 
+            firstname=validated_data.get('firstname', None), 
+            lastname=validated_data.get('lastname', None))
+        account.set_unusable_password()
+        account.set_social_id(validated_data.get('social_id', None))
+        account.save()
+        return account
+
+    # def save(self): # If you implement this, you'll have to call .save on the Account object in the views.py file
+        # account = Account(
+        #     email=validated_data['email'], 
+        #     account_type=validated_data['account_type'],
+        #     fullname=validated_data.get('fullname', None), 
+        #     firstname=validated_data.get('firstname', None), 
+        #     lastname=validated_data.get('lastname', None))
+        # account.set_unusable_password()
+        # account.save()
+    #     return account
+        
+    class Meta:
+        model = Account
+        fields = ( "id", "email", "account_type", "social_id", "fullname", "firstname", "lastname" )
+
 #IMPORT THE DJANGO BUILT-IN ADMIN Model 'User'
 #from django.contrib.auth.models import User #SAME AS:
 #from django.contrib.auth import get_user_model # Return User Model that is Active in this project
@@ -55,6 +84,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(account)
         # Add custom claims
         token['email'] = account.email
+        token['account_type'] = account.account_type
         token['fullname'] = account.fullname
         token['firstname'] = account.firstname
         token['lastname'] = account.lastname

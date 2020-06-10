@@ -11,12 +11,17 @@ urlpatterns = [
     path('api/token/signup/', views.registration_view, name='signup_token'),
     #you can use a custom view if you need to return more data apart from token(this requires 'username')
     path('api/token/login/', authviews.obtain_auth_token, name='login_token'),
-    #JWT
+    #JWT=====================================================================================================
+    path('api/jwt/verify/', jwt_views.TokenVerifyView.as_view(), name='verify_jwt'),
     path('api/jwt/signup/', views.registration_view_jwt, name='signup_jwt'),
     #path('api/jwt/login/', jwt_views.TokenObtainPairView.as_view(), name='login_jwt'), #built-in login
     path('api/jwt/login/', views.MyTokenObtainPairView.as_view(), name='login_jwt'),
     path('api/jwt/refresh/', jwt_views.TokenRefreshView.as_view(), name='refresh_jwt'),
     path('api/jwt/logout/', views.logout_view_jwt, name='logout_jwt'),
+    #JWT SOCIAL
+    path('api/jwt/signup/social/', views.registration_view_jwt_social, name='signup_jwt_social'),
+    path('api/jwt/login/social/', views.login_view_jwt_social, name='login_jwt_social'),
+    #=====================================================================================================
     #EXTRA
     path('api/no-token/signup/', views.RegisterUserOnlyView.as_view(), name='signup_no_token'),
     path('test/labels/', views.TestAllLabels.as_view(), name='test'),

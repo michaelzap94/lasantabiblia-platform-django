@@ -8,16 +8,16 @@ from .models import Account
 
 class UserAdmin(BaseUserAdmin):
     ordering = ['id']
-    list_display = ['email', 'fullname', 'firstname', 'lastname', 'date_joined', 'last_login', 'is_admin','is_staff']
+    list_display = ['email', 'fullname', 'account_type', 'social_id', 'firstname', 'lastname', 'date_joined', 'last_login', 'is_admin','is_staff']
     search_fields = ('email','fullname', 'firstname', 'lastname')
-    readonly_fields=('date_joined', 'last_login')
+    readonly_fields=('date_joined', 'last_login', 'account_type', 'social_id')
     filter_horizontal = ()
     list_filter = ()
     # SUPPORT our CUSTOM User Model
     # Defines the fields and sections that you see for EACH user.
     # Structure: Title for the sections | fields it will contain
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('email', 'password', 'account_type', 'social_id')}),
         (_('Personal Info'), {'fields': ('fullname','firstname','lastname')}),
         (_('Permissions'),
             {
