@@ -31,6 +31,10 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    'Core',
+    'RestAPIS',
+    'Auth',
+    'Account',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,10 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',#generates 2 models, outstanding and blacklist for Refresh tokens
-    'Core',
-    'RestAPIS',
-    'Auth',
-    'Account'
+    'django_cleanup.apps.CleanupConfig', # clean media files when removed from db
 ]
 
 MIDDLEWARE = [
@@ -166,3 +167,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.0.14']#ADD YOUR IP HERE.
 
 #reference the App/ModelClassName -> tell Django that we want to use a Custom model for the built-in User table
 AUTH_USER_MODEL = 'Account.Account'
+
+# Images|media added during runtime.
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
