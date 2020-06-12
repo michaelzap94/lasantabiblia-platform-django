@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 # from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from rest_framework import permissions
 
-from .serializer import ResourceSerializer
+from .serializer import ResourceSerializer, ResourceSerializerWithLink
 from .models import Resource
 
 SUPPORTED_ACCOUNT_TYPES = ['google']
@@ -55,24 +55,22 @@ class IsAdminOrReadOnly(permissions.BasePermission):
 class ResourcesByTypeView(APIView):
     # specified in settings
     # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
+    #permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = [IsAdminOrReadOnly]
     def get(self, request, resource_type):
         allResources = Resource.objects.filter(resource_type=resource_type)
         serialized = ResourceSerializer(allResources, many=True)
         return Response(serialized.data)
 
 class ResourcesByLangView(APIView):
-    # specified in settings
-    # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = [IsAdminOrReadOnly]
     def get(self, request, language):
         allResources = Resource.objects.filter(language=language)
         serialized = ResourceSerializer(allResources, many=True)
         return Response(serialized.data)
 
 class ResourcesExtraView(APIView):
-    # specified in settings
-    # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication, SessionAuthentication)
     permission_classes = [IsAdminOrReadOnly]
     def get(self, request):
         allResources = Resource.objects.exclude(resource_type="bibles")
@@ -94,4 +92,4 @@ class ResourcesAllView(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
     permission_classes = [IsAdminOrReadOnly]
     queryset = Resource.objects.all() # this is the model (dataset), so we need to pull out the data
-    serializer_class = ResourceSerializer # Specify which serializer_class to use (show) when this view is accessed/served
+    serializer_class = ResourceSerializerWithLink # Specify which serializer_class to use (show) when this view is accessed/served
