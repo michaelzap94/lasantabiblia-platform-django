@@ -82,6 +82,7 @@ class ResourcesByLangView(APIView):
 # VIEWSETS HANDLE API requests and Responses only, if you need to handle HTTP req/res use APIView
 class ResourcesAllView(viewsets.ModelViewSet):
     #YOU WOULD GET: {"detail": "Authentication credentials were not provided."} IF not LOGGED IN
-    permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
+    #permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
     queryset = Resource.objects.all() # this is the model (dataset), so we need to pull out the data
     serializer_class = ResourceSerializer # Specify which serializer_class to use (show) when this view is accessed/served
