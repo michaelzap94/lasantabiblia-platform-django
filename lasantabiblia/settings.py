@@ -31,6 +31,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    'Resources',
     'Core',
     'RestAPIS',
     'Auth',
