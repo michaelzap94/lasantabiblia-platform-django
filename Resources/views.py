@@ -70,6 +70,15 @@ class ResourcesByLangView(APIView):
         serialized = ResourceSerializer(allResources, many=True)
         return Response(serialized.data)
 
+class ResourcesExtraView(APIView):
+    # specified in settings
+    # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication, SessionAuthentication)
+    permission_classes = [IsAdminOrReadOnly]
+    def get(self, request):
+        allResources = Resource.objects.exclude(resource_type="bibles")
+        serialized = ResourceSerializer(allResources, many=True)
+        return Response(serialized.data)
+
 # class ResourcesAllView(APIView):
 #     # specified in settings
 #     # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication, SessionAuthentication)

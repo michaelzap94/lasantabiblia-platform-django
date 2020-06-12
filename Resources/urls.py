@@ -11,4 +11,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('type/<str:resource_type>/', views.ResourcesByTypeView.as_view(), name='resources_type'),
     path('language/<str:language>/', views.ResourcesByLangView.as_view(), name='resources_lang'),
+    path('extra/', views.ResourcesExtraView.as_view(), name='resources_extra'),
 ]
