@@ -23,4 +23,5 @@ urlpatterns = [
     path('auth/', include('Auth.urls')),
     path('', include('RestAPIS.urls')),
     path('resources/', include('Resources.urls')),
+    path('syncup/', include('SyncUp.urls')),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

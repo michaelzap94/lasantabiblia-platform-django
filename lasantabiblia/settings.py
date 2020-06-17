@@ -31,6 +31,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    'SyncUp',
     'Resources',
     'Core',
     'RestAPIS',

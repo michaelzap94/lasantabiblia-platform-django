@@ -9,6 +9,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
+from SyncUp.models import SyncUp
+
 # Manager class -> can create a user or super user
 # all of this class is BoilerPlate
 class MyAccountUserManager(BaseUserManager):
@@ -80,3 +82,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_sync_up(sender, instance=None, created=False, **kwargs):
+    if created:
+        SyncUp.objects.create(user=instance)
