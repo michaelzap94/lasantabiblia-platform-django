@@ -14,7 +14,7 @@ class Resource(models.Model):
     is_published = models.BooleanField(default=True)
     list_date = models.DateTimeField(auto_now=True) # default=datetime.now, blank=True
     #WILL BE AVAILABLE WHEN WE GET THE 'resource'
-    size = models.DecimalField(blank=True, max_digits=10, decimal_places=1) # resource.size
+    size = models.IntegerField(default=0) # resource.size
     filename = models.CharField(blank=True, max_length=200) # os.path.basename(self.file.name)
 
     def __str__(self):
