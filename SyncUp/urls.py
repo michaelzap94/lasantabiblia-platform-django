@@ -8,7 +8,7 @@ router = routers.DefaultRouter()
 router.register('all', views.SyncUpAllView) # 1st param -> url to access this view, 2nd param -> the view extending rest_framework viewsets.ModelViewSet
 urlpatterns = [
     path('', include(router.urls)),
-    path('check/', views.CheckClientHasLatestVersionView.as_view(), name='check_latest_version'),
+    path('check/', views.ServerDBVersionView.as_view(), name='check_latest_version'),
 
     # path('type/<str:resource_type>/', views.ResourcesByTypeView.as_view(), name='resources_type'),
     # path('language/<str:language>/', views.ResourcesByLangView.as_view(), name='resources_lang'),

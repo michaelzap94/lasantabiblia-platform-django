@@ -23,9 +23,17 @@ class SyncUpAllView(viewsets.ModelViewSet):
 
 #FIRST CHECK THE USER IS LOGGEDIN, THEN CHECK IF USER IS AUTHORIZED TO PERFORM THIS ACTION
 # @permission_classes([permissions.IsAuthenticated, IsOwner])
-class CheckClientHasLatestVersionView(APIView):
+class ServerDBVersionView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsOwner]
-    # Ensure a user sees only own SyncUp objects.
+    # GETS SERVER VERSION
+    def get(self, request):
+        user = request.user
+        if user.is_authenticated:
+            syncup_data = SyncUp.objects.get(user=user.id)
+            serialized = SyncUpSerializer(syncup_data, many=False)
+            return Response(serialized.data)
+        raise PermissionDenied()
+    # CHECKS SERVER VERSION is same as CLIENT
     def post(self, request):
         user = request.user
         if user.is_authenticated:
