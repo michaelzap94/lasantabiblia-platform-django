@@ -10,6 +10,7 @@ from rest_framework import permissions
 from .serializer import SyncUpModelSerializer, OverrideLabelsSerializer
 from .models import SyncUp
 from utilities.my_atomic_viewsets import AtomicModelViewSet
+from RestAPIS.models import Label, Verses_Marked, Verses_Learned
 
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -64,8 +65,26 @@ class ServerDBVersionView(APIView):
             # return Response(serialized.data)
         raise PermissionDenied()
 
-class ServerDBOverrideView(AtomicModelViewSet):
-    pass
+class ServerDBOverrideView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    def get(self, request):
+        user = request.user
+        if user.is_authenticated:
+            labels = Label.objects.get(user=user.id)
+            verses_marked = Verses_Marked.objects.get(user=user.id)
+            verses_learned = Verses_Learned.objects.get(user=user.id)
+
+            dataToSync = {
+                "labels": labels,
+                "verses_marked": verses_marked,
+                "verses_learned": verses_learned
+            }
+
+            serialized = OverrideLabelsSerializer(dataToSync, many=False)
+            return Response(serialized.data)
+        raise PermissionDenied()
+    # def post(self, request):
+    #     serializer = RegistrationSerializer(data=request.data)
 
 # class ServerDBOverrideView(AtomicModelViewSet):
 #     permission_classes = [permissions.IsAuthenticated, IsOwner]
