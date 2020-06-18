@@ -9,7 +9,7 @@ router.register('all', views.SyncUpAllView) # 1st param -> url to access this vi
 urlpatterns = [
     path('', include(router.urls)),
     path('check/', views.ServerDBVersionView.as_view(), name='check_latest_version'),
-    path('override/', views.ServerDBOverrideView.as_view(), name='override_data'),
+    path('process/', views.ServerSyncUpDBProcessView.as_view(), name='process_data'),
     # path('syncup/', views.ServerDBSyncUpView.as_view(), name='syncup_data'),
 
     # path('type/<str:resource_type>/', views.ResourcesByTypeView.as_view(), name='resources_type'),

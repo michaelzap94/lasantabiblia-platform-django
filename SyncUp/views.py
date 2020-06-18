@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import viewsets #sets of pages that the rest_framework will create for us
 from rest_framework.views import APIView
 from rest_framework.response import Response  # Rest framework response
@@ -12,6 +11,7 @@ from .serializer import SyncUpModelSerializer, OverrideLabelsSerializer
 from .models import SyncUp
 from utilities.my_atomic_viewsets import AtomicModelViewSet
 from RestAPIS.models import Label, Verses_Marked, Verses_Learned
+import json
 
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -47,11 +47,11 @@ class ServerDBVersionView(APIView):
             server_version = syncup_data.version
             if client_version == None:
                 data['status'] = "error"
-                data['detail'] = "Version was not sent by the client."
+                data['error'] = "Version was not sent by the client."
                 return Response(data)
             elif server_version == None:
                 data['status'] = "error"
-                data['detail'] = "Version is not present in the server."
+                data['error'] = "Version is not present in the server."
                 return Response(data)
             else:
                 client_version = int(client_version)
@@ -66,50 +66,101 @@ class ServerDBVersionView(APIView):
             # return Response(serialized.data)
         raise PermissionDenied()
 
-class ServerDBOverrideView(APIView):
+class ServerSyncUpDBProcessView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsOwner]
+
     def get(self, request):
         user = request.user
         if user.is_authenticated:
             data = {}
             try:
-                labels = Label.objects.get(user=user.id)
-                verses_marked = Verses_Marked.objects.get(user=user.id)
-                verses_learned = Verses_Learned.objects.get(user=user.id)
-            except ObjectDoesNotExist as dne:
+                labels = Label.objects.filter(user=user.id)
+                verses_marked = Verses_Marked.objects.filter(user=user.id)
+                verses_learned = Verses_Learned.objects.filter(user=user.id)
+            except Exception as e:
                 data["status"] = "error"
-                data["detail"] = str(dne)
+                data["error"] = str(e)
                 return Response(data)
 
-            print(labels)
             dataToSync = {
                 "labels": labels,
                 "verses_marked": verses_marked,
                 "verses_learned": verses_learned
             }
-            print(dataToSync)
 
-            serialized = OverrideLabelsSerializer(dataToSync, many=False)
-            return Response(serialized.data)
+            # serialized = OverrideLabelsSerializer(data=dataToSync, many=False)
+            # if serialized.is_valid(): #and client_version != None and client_state!=None handled before
+            #     sync_up_object = SyncUp.objects.get(user=user.id)
+            #     if updateVersionResult:
+            #         data['status'] = 'success'
+            #         data['version'] = sync_up_object.version
+            #         data['result'] - serialized.data
+            # else:
+            #     data['status'] = 'error'
+            #     data['error'] = json.dumps(serialized.errors)
+            sync_up_object = SyncUp.objects.get(user=user.id)
+            data['status'] = 'success'
+            data['version'] = sync_up_object.version
+            data['result'] = dataToSync
+            return Response(data)
         raise PermissionDenied()
+
     def post(self, request):
         user = request.user
         if user.is_authenticated:
+            data = {}
+            client_version = request.data.get('version', None)
+            client_state = request.data.get('state', None)
+            if client_version == None:
+                data['status'] = "error"
+                data['error'] = "Version was not sent by the client."
+                return Response(data)
+            if client_state == None:
+                data['status'] = "error"
+                data['error'] = "State was not sent by the client."
+                return Response(data)
 
             labels = request.data.get('labels', None)
             verses_marked = request.data.get('verses_marked', None)
             verses_learned = request.data.get('verses_learned', None)
-
             dataToSync = {
                 "labels": labels,
                 "verses_marked": verses_marked,
                 "verses_learned": verses_learned
             }
-            print(dataToSync)
+            serialized = OverrideLabelsSerializer(data=dataToSync, many=False)
 
-            serialized = OverrideLabelsSerializer(dataToSync, many=False)
-            print(serialized)
-            return Response(serialized.data)
+            if serialized.is_valid(): #and client_version != None and client_state!=None handled before
+                try:
+                    success = serialized.save()#insert the data
+                except Exception as e:
+                    data["status"] = "error"
+                    data["error"] = str(e)
+                    return Response(data)
+                if success:
+                    new_version = client_version + 1 if client_state == 0 else client_version
+                    #Update SyncUp version for this user
+                    try: 
+                        sync_up = SyncUp.objects.get(user=user.id)
+                        sync_up.version = new_version
+                        sync_up.save()
+                        updateVersionResult = True
+                    except Exception:
+                        updateVersionResult = False
+
+                    if updateVersionResult:
+                        data['status'] = 'success'
+                        data['version'] = new_version
+                    else:
+                        data['status'] = 'error'
+                        data['error'] = 'Data was saved in the Server but Version was not updated'
+                else:
+                    data['status'] = 'error'
+                    data['error'] = 'Data could not be saved in Server'
+            else:
+                data['status'] = 'error'
+                data['error'] = json.dumps(serialized.errors)
+            return Response(data)
         raise PermissionDenied()
 
 # class ServerDBOverrideView(AtomicModelViewSet):
