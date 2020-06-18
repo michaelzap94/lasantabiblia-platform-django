@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import viewsets #sets of pages that the rest_framework will create for us
 from rest_framework.views import APIView
 from rest_framework.response import Response  # Rest framework response
@@ -70,21 +71,46 @@ class ServerDBOverrideView(APIView):
     def get(self, request):
         user = request.user
         if user.is_authenticated:
-            labels = Label.objects.get(user=user.id)
-            verses_marked = Verses_Marked.objects.get(user=user.id)
-            verses_learned = Verses_Learned.objects.get(user=user.id)
+            data = {}
+            try:
+                labels = Label.objects.get(user=user.id)
+                verses_marked = Verses_Marked.objects.get(user=user.id)
+                verses_learned = Verses_Learned.objects.get(user=user.id)
+            except ObjectDoesNotExist as dne:
+                data["status"] = "error"
+                data["detail"] = str(dne)
+                return Response(data)
+
+            print(labels)
+            dataToSync = {
+                "labels": labels,
+                "verses_marked": verses_marked,
+                "verses_learned": verses_learned
+            }
+            print(dataToSync)
+
+            serialized = OverrideLabelsSerializer(dataToSync, many=False)
+            return Response(serialized.data)
+        raise PermissionDenied()
+    def post(self, request):
+        user = request.user
+        if user.is_authenticated:
+
+            labels = request.data.get('labels', None)
+            verses_marked = request.data.get('verses_marked', None)
+            verses_learned = request.data.get('verses_learned', None)
 
             dataToSync = {
                 "labels": labels,
                 "verses_marked": verses_marked,
                 "verses_learned": verses_learned
             }
+            print(dataToSync)
 
             serialized = OverrideLabelsSerializer(dataToSync, many=False)
+            print(serialized)
             return Response(serialized.data)
         raise PermissionDenied()
-    # def post(self, request):
-    #     serializer = RegistrationSerializer(data=request.data)
 
 # class ServerDBOverrideView(AtomicModelViewSet):
 #     permission_classes = [permissions.IsAuthenticated, IsOwner]
