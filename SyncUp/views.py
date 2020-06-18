@@ -88,20 +88,27 @@ class ServerSyncUpDBProcessView(APIView):
                 "verses_learned": verses_learned
             }
 
-            # serialized = OverrideLabelsSerializer(data=dataToSync, many=False)
-            # if serialized.is_valid(): #and client_version != None and client_state!=None handled before
+            serialized = OverrideLabelsSerializer(dataToSync, many=False)
+
+            try:
+                sync_up_object = SyncUp.objects.get(user=user.id)
+                data['status'] = 'success'
+                data['version'] = sync_up_object.version
+                data['result'] = serialized.data
+            except Exception as e:
+                data["status"] = "error"
+                data["error"] = str(e)
+
+            # try:
             #     sync_up_object = SyncUp.objects.get(user=user.id)
-            #     if updateVersionResult:
-            #         data['status'] = 'success'
-            #         data['version'] = sync_up_object.version
-            #         data['result'] - serialized.data
-            # else:
-            #     data['status'] = 'error'
-            #     data['error'] = json.dumps(serialized.errors)
-            sync_up_object = SyncUp.objects.get(user=user.id)
-            data['status'] = 'success'
-            data['version'] = sync_up_object.version
-            data['result'] = dataToSync
+            # except Exception as e:
+            #     data["status"] = "error"
+            #     data["error"] = str(e)
+            #     return Response(data)
+            # data['status'] = 'success'
+            # data['version'] = sync_up_object.version
+            # data['result'] = dataToSync
+
             return Response(data)
         raise PermissionDenied()
 
@@ -124,15 +131,17 @@ class ServerSyncUpDBProcessView(APIView):
             verses_marked = request.data.get('verses_marked', None)
             verses_learned = request.data.get('verses_learned', None)
             dataToSync = {
+                "userId": user.id,
                 "labels": labels,
                 "verses_marked": verses_marked,
                 "verses_learned": verses_learned
             }
+
             serialized = OverrideLabelsSerializer(data=dataToSync, many=False)
 
             if serialized.is_valid(): #and client_version != None and client_state!=None handled before
                 try:
-                    success = serialized.save()#insert the data
+                    success = serialized.save()#FIRST DELETE ALL THEN insert the data
                 except Exception as e:
                     data["status"] = "error"
                     data["error"] = str(e)
@@ -162,6 +171,8 @@ class ServerSyncUpDBProcessView(APIView):
                 data['error'] = json.dumps(serialized.errors)
             return Response(data)
         raise PermissionDenied()
+
+
 
 # class ServerDBOverrideView(AtomicModelViewSet):
 #     permission_classes = [permissions.IsAuthenticated, IsOwner]

@@ -26,28 +26,42 @@ class SyncUpModelSerializer(serializers.ModelSerializer):
 class OverrideLabelsSerializer(serializers.Serializer):
     labels = LabelSerializer(required=False, many=True)
     verses_marked = VersesMarkedSerializer(required=False, many=True)
-    verses_learned = VersesLearnedSerializer(required=False, many=True)
+    verses_learned = VersesLearnedSerializer(required=False, many=True)   
+    userId = serializers.IntegerField(required=False)
+
+    # def delete_all_for_user(id):
+    #     Label.objects.filter(user=id).delete()
+    #     Verses_Marked.objects.filter(user=id).delete()
+    #     Verses_Learned.objects.filter(user=id).delete()
     
     @transaction.atomic
     def create(self, validated_data):
-        # logic to update labels
-        labels_list_of_objects = validated_data.pop('labels', None)
-        #label_group = Label.objects.create(**validated_data)
-        for label in labels_list_of_objects:
-            Label.objects.create(**label)
-        # logic to update verses_marked
-        verses_marked_list_of_objects = validated_data.pop('verses_marked', None)
-        #verses_marked_group = Verses_Marked.objects.create(**validated_data)
-        for verse_marked in verses_marked_list_of_objects:
-            Verses_Marked.objects.create(**verse_marked)
+        userId = validated_data.pop('userId', None)
+        if userId != None:
+            #delete_all_for_user(userId)
+            Label.objects.filter(user=userId).delete()
+            Verses_Marked.objects.filter(user=userId).delete()
+            Verses_Learned.objects.filter(user=userId).delete()
+            # logic to update labels
+            labels_list_of_objects = validated_data.pop('labels', None)
+            #label_group = Label.objects.create(**validated_data)
+            for label in labels_list_of_objects:
+                Label.objects.create(**label)
+            # logic to update verses_marked
+            verses_marked_list_of_objects = validated_data.pop('verses_marked', None)
+            #verses_marked_group = Verses_Marked.objects.create(**validated_data)
+            for verse_marked in verses_marked_list_of_objects:
+                Verses_Marked.objects.create(**verse_marked)
 
-        # logic to update verses_learned
-        verses_learned_list_of_objects = validated_data.pop('verses_learned', None)
-        #verses_learned_group = Verses_Learned.objects.create(**validated_data)
-        for verse_learned in verses_learned_list_of_objects:
-            Verses_Learned.objects.create(**verse_learned)
+            # logic to update verses_learned
+            verses_learned_list_of_objects = validated_data.pop('verses_learned', None)
+            #verses_learned_group = Verses_Learned.objects.create(**validated_data)
+            for verse_learned in verses_learned_list_of_objects:
+                Verses_Learned.objects.create(**verse_learned)
 
-        return True
+            return True
+        else:
+            return False
 
     # def update(self, validated_data):
     #     labels_list_of_objects = validated_data.pop('labels', None)

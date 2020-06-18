@@ -240,7 +240,6 @@ def is_valid_auth_token(account_type, auth_token):
         #data['picture'] = idinfo['picture']
 
     except Exception as e:
-        print(str(e))
         # Invalid token
         data = None
     
