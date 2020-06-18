@@ -92,9 +92,10 @@ class ServerSyncUpDBProcessView(APIView):
 
             try:
                 sync_up_object = SyncUp.objects.get(user=user.id)
+                data = serialized.data
                 data['status'] = 'success'
                 data['version'] = sync_up_object.version
-                data['result'] = serialized.data
+                # data['result'] = serialized.data
             except Exception as e:
                 data["status"] = "error"
                 data["error"] = str(e)
