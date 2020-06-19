@@ -173,3 +173,9 @@ AUTH_USER_MODEL = 'Account.Account'
 # Images|media added during runtime.
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+#FOR DEPLOYMENT=================================================================
+try:
+    from .local_settings import * #IMPORT this file if it exists
+except ImportError:
+    pass
