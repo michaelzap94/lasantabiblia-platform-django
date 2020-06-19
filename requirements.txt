@@ -3,13 +3,10 @@ django-cleanup==5.0.0
 djangorestframework==3.11.0
 djangorestframework-simplejwt==4.4.0
 google-auth==1.16.1
-idna==2.9
 mysqlclient==1.4.6
 python-dotenv==0.13.0
 requests==2.23.0
-rsa==4.0
 sqlparse==0.3.1
-urllib3==1.25.9
 # Postgres package Python recommends
 # You would need to add RUN apk add --update --no-cache postgresql-client in the dockerfile
 psycopg2>=2.8.2,<2.8.5
