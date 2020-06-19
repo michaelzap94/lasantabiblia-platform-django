@@ -4,7 +4,7 @@ from .models import Label, Verses_Marked, Verses_Learned # we need to serialize 
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label # name of model
-        fields = ('id', 'user', '_id', 'name', 'color', 'permanent') #fields we want to serialize( convert to/from JSON)
+        fields = ('id', 'user', '_id', 'name', 'color', 'permanent', 'state') #fields we want to serialize( convert to/from JSON)
         read_only_Fields = ('id',) #fields that we want to protect
 
 class VersesMarkedSerializer(serializers.ModelSerializer):

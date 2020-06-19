@@ -7,7 +7,7 @@ class Label(models.Model):
     name = models.CharField(max_length=200)
     color = models.CharField(max_length=10)
     permanent = models.IntegerField(default=0,blank=True, null=True)
-    state = models.IntegerField(default=0,blank=True)
+    state = models.IntegerField(default=0,blank=True, null=True)
 
     # def create(self, validated_data): # If you implement this, you'll have to call .save on the Account object in the views.py file
     #     label = Label(
