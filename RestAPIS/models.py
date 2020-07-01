@@ -3,7 +3,7 @@ from django.conf import settings
 
 class Label(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    _id = models.IntegerField()
+    _id = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     color = models.CharField(max_length=10)
     permanent = models.IntegerField(default=0,blank=True, null=True)
@@ -22,8 +22,8 @@ class Label(models.Model):
 
 class Verses_Marked(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    _id = models.IntegerField()
-    label_id = models.IntegerField()
+    _id = models.CharField(max_length=200)
+    label_id = models.CharField(max_length=200)
     book_number = models.IntegerField()
     chapter = models.IntegerField()
     verseFrom = models.IntegerField()
@@ -50,9 +50,9 @@ class Verses_Marked(models.Model):
 
 class Verses_Learned(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    _id = models.IntegerField()
+    _id = models.CharField(max_length=200)
     UUID = models.CharField(max_length=100)
-    label_id = models.IntegerField()
+    label_id = models.CharField(max_length=200)
     learned = models.IntegerField(default=0,blank=True)
     priority = models.IntegerField(default=0,blank=True, null=True)
     state = models.IntegerField(default=0,blank=True, null=True)
