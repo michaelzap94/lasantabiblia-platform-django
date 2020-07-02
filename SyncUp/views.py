@@ -10,7 +10,7 @@ from rest_framework import permissions
 from .serializer import SyncUpModelSerializer, OverrideLabelsSerializer
 from .models import SyncUp
 from utilities.my_atomic_viewsets import AtomicModelViewSet
-from RestAPIS.models import Label, Verses_Marked, Verses_Learned
+from RestAPIS.models import Label, Verses_Marked, Verses_Learned, Notes
 import json
 
 class IsOwner(permissions.BasePermission):
@@ -77,6 +77,7 @@ class ServerSyncUpDBProcessView(APIView):
                 labels = Label.objects.filter(user=user.id)
                 verses_marked = Verses_Marked.objects.filter(user=user.id)
                 verses_learned = Verses_Learned.objects.filter(user=user.id)
+                notes = Notes.objects.filter(user=user.id)
             except Exception as e:
                 data["status"] = "error"
                 data["error"] = str(e)
@@ -85,7 +86,8 @@ class ServerSyncUpDBProcessView(APIView):
             dataToSync = {
                 "labels": labels,
                 "verses_marked": verses_marked,
-                "verses_learned": verses_learned
+                "verses_learned": verses_learned,
+                "notes": notes
             }
 
             serialized = OverrideLabelsSerializer(dataToSync, many=False)
@@ -131,11 +133,13 @@ class ServerSyncUpDBProcessView(APIView):
             labels = request.data.get('labels', None)
             verses_marked = request.data.get('verses_marked', None)
             verses_learned = request.data.get('verses_learned', None)
+            notes = request.data.get('notes', None)
             dataToSync = {
                 "userId": user.id,
                 "labels": labels,
                 "verses_marked": verses_marked,
-                "verses_learned": verses_learned
+                "verses_learned": verses_learned,
+                "notes": notes,
             }
 
             serialized = OverrideLabelsSerializer(data=dataToSync, many=False)

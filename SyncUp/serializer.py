@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import SyncUp # we need to serialize the model data
-from RestAPIS.models import Label, Verses_Marked, Verses_Learned
-from RestAPIS.serializer import LabelSerializer, VersesMarkedSerializer, VersesLearnedSerializer
+from RestAPIS.models import Label, Verses_Marked, Verses_Learned, Notes
+from RestAPIS.serializer import LabelSerializer, VersesMarkedSerializer, VersesLearnedSerializer, NotesSerializer
 from django.db import transaction
 class UnixEpochDateField(serializers.DateTimeField):
     def to_representation(self, value):
@@ -26,7 +26,8 @@ class SyncUpModelSerializer(serializers.ModelSerializer):
 class OverrideLabelsSerializer(serializers.Serializer):
     labels = LabelSerializer(required=False, many=True)
     verses_marked = VersesMarkedSerializer(required=False, many=True)
-    verses_learned = VersesLearnedSerializer(required=False, many=True)   
+    verses_learned = VersesLearnedSerializer(required=False, many=True) 
+    notes = NotesSerializer(required=False, many=True)  
     userId = serializers.IntegerField(required=False)
 
     # def delete_all_for_user(id):
@@ -42,11 +43,14 @@ class OverrideLabelsSerializer(serializers.Serializer):
             Label.objects.filter(user=userId).delete()
             Verses_Marked.objects.filter(user=userId).delete()
             Verses_Learned.objects.filter(user=userId).delete()
+            Notes.objects.filter(user=userId).delete()
+
             # logic to update labels
             labels_list_of_objects = validated_data.pop('labels', None)
             #label_group = Label.objects.create(**validated_data)
             for label in labels_list_of_objects:
                 Label.objects.create(**label)
+                
             # logic to update verses_marked
             verses_marked_list_of_objects = validated_data.pop('verses_marked', None)
             #verses_marked_group = Verses_Marked.objects.create(**validated_data)
@@ -58,6 +62,12 @@ class OverrideLabelsSerializer(serializers.Serializer):
             #verses_learned_group = Verses_Learned.objects.create(**validated_data)
             for verse_learned in verses_learned_list_of_objects:
                 Verses_Learned.objects.create(**verse_learned)
+
+            # logic to update notes
+            notes_list_of_objects = validated_data.pop('notes', None)
+            #notes_group = Notes.objects.create(**validated_data)
+            for note in notes_list_of_objects:
+                Notes.objects.create(**note)
 
             return True
         else:
